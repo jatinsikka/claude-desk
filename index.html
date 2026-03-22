@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Desk</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 270px;
+      height: 210px;
+      overflow: hidden;
+    }
+
+    body {
+      background: rgba(11, 7, 22, 0.94);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: 16px;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 12px;
+      -webkit-app-region: drag;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 9px;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+      flex-shrink: 0;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #a78bfa;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #6b7280;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+    .status-dot.ok      { background: #10b981; box-shadow: 0 0 7px #10b981aa; }
+    .status-dot.warning { background: #f59e0b; box-shadow: 0 0 7px #f59e0baa; }
+    .status-dot.danger  { background: #ef4444; box-shadow: 0 0 7px #ef4444aa; }
+
+    .actions {
+      display: flex;
+      gap: 4px;
+      -webkit-app-region: no-drag;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: rgba(167, 139, 250, 0.45);
+      cursor: pointer;
+      font-size: 14px;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      line-height: 1;
+    }
+    .icon-btn:hover {
+      color: #a78bfa;
+      background: rgba(139, 92, 246, 0.12);
+    }
+
+    /* ── Content ── */
+    .content {
+      flex: 1;
+      padding: 12px 14px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      overflow: hidden;
+    }
+
+    /* ── Meter ── */
+    .meter {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .meter-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .meter-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(226, 232, 240, 0.55);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .meter-pct {
+      font-size: 11px;
+      font-weight: 700;
+      color: #c4b5fd;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bar-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(90deg, #5b21b6, #a78bfa);
+      box-shadow: 0 0 6px rgba(139, 92, 246, 0.5);
+    }
+
+    .bar-fill.warning {
+      background: linear-gradient(90deg, #92400e, #fbbf24);
+      box-shadow: 0 0 6px rgba(251, 191, 36, 0.45);
+    }
+
+    .bar-fill.danger {
+      background: linear-gradient(90deg, #7f1d1d, #f87171);
+      box-shadow: 0 0 6px rgba(248, 113, 113, 0.45);
+    }
+
+    .reset-label {
+      font-size: 9px;
+      color: rgba(226, 232, 240, 0.28);
+      text-align: right;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Empty states ── */
+    .empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: rgba(226, 232, 240, 0.38);
+      font-size: 11px;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .login-btn {
+      padding: 6px 16px;
+      background: rgba(139, 92, 246, 0.18);
+      border: 1px solid rgba(139, 92, 246, 0.38);
+      border-radius: 8px;
+      color: #a78bfa;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 500;
+      -webkit-app-region: no-drag;
+      transition: background 0.2s;
+    }
+    .login-btn:hover { background: rgba(139, 92, 246, 0.32); }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 0 14px 8px;
+      font-size: 9px;
+      color: rgba(226, 232, 240, 0.2);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── Spinner ── */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    .spinning { animation: spin 1s linear infinite; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">
+      <div class="status-dot" id="statusDot"></div>
+      Claude Desk
+    </div>
+    <div class="actions">
+      <button class="icon-btn" id="refreshBtn" title="Refresh now">↻</button>
+      <button class="icon-btn" id="openClaudeBtn" title="Open Claude">⚙</button>
+      <button class="icon-btn" id="quitBtn" title="Quit">✕</button>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+    <div class="empty">
+      <span class="spinning">↻</span>
+      <span>Loading...</span>
+    </div>
+  </div>
+
+  <div class="footer" id="footer"></div>
+
+  <script>
+    const { send, on } = window.api
+
+    // ── Buttons ──────────────────────────────────────────────────────────────
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      send('refresh')
+      document.getElementById('refreshBtn').querySelector || null
+      const btn = document.getElementById('refreshBtn')
+      btn.classList.add('spinning')
+      setTimeout(() => btn.classList.remove('spinning'), 1000)
+    })
+
+    document.getElementById('openClaudeBtn').addEventListener('click', () => {
+      send('open-claude')
+    })
+
+    document.getElementById('quitBtn').addEventListener('click', () => {
+      send('quit')
+    })
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function formatReset(isoString) {
+      if (!isoString) return ''
+      const resetDate = new Date(isoString)
+      const now = new Date()
+      const diffMs = resetDate - now
+      if (diffMs <= 0) return 'resetting soon'
+      const diffH = Math.floor(diffMs / 3600000)
+      const diffM = Math.floor((diffMs % 3600000) / 60000)
+      if (diffH > 0) return `resets in ${diffH}h ${diffM}m`
+      return `resets in ${diffM}m`
+    }
+
+    function barClass(pct) {
+      if (pct >= 90) return 'danger'
+      if (pct >= 70) return 'warning'
+      return ''
+    }
+
+    function overallStatus(data) {
+      const pcts = [
+        data?.five_hour?.used_percent,
+        data?.seven_day?.used_percent,
+      ].filter(p => p != null)
+      if (!pcts.length) return ''
+      const max = Math.max(...pcts)
+      if (max >= 90) return 'danger'
+      if (max >= 70) return 'warning'
+      return 'ok'
+    }
+
+    function renderMeter(label, pct, resetAt) {
+      const rounded = Math.round(pct ?? 0)
+      const cls = barClass(rounded)
+      const width = Math.min(rounded, 100)
+      return `
+        <div class="meter">
+          <div class="meter-row">
+            <span class="meter-label">${label}</span>
+            <span class="meter-pct">${pct != null ? rounded + '%' : '—'}</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill ${cls}" style="width:${width}%"></div>
+          </div>
+          <div class="reset-label">${formatReset(resetAt)}</div>
+        </div>
+      `
+    }
+
+    function formatAge(fetchedAt) {
+      if (!fetchedAt) return ''
+      const s = Math.round((Date.now() - fetchedAt) / 1000)
+      if (s < 5) return 'just updated'
+      if (s < 60) return `updated ${s}s ago`
+      const m = Math.round(s / 60)
+      return `updated ${m}m ago`
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────────
+    function render(data) {
+      const content = document.getElementById('content')
+      const dot = document.getElementById('statusDot')
+      const footer = document.getElementById('footer')
+
+      dot.className = 'status-dot ' + overallStatus(data)
+      footer.textContent = formatAge(data?.fetchedAt)
+
+      // Not logged in
+      if (data?.error === 'NOT_LOGGED_IN') {
+        content.innerHTML = `
+          <div class="empty">
+            <span>Sign in to Claude to see<br>your usage limits</span>
+            <button class="login-btn" id="loginInner">Open Claude →</button>
+          </div>
+        `
+        document.getElementById('loginInner').addEventListener('click', () => send('open-claude'))
+        return
+      }
+
+      // Rate limited but have stale data — fall through to normal render with error note
+      const hasData = data?.five_hour != null || data?.seven_day != null
+
+      if (!hasData) {
+        const msg = data?.error === 'RATE_LIMITED'
+          ? '429 — too many requests\nWill retry in 5 min'
+          : data?.error
+            ? `Error: ${data.error}`
+            : 'No data yet'
+        content.innerHTML = `<div class="empty"><span>${msg}</span></div>`
+        return
+      }
+
+      let html = ''
+
+      if (data.five_hour != null) {
+        html += renderMeter('5-Hour Window', data.five_hour.used_percent, data.five_hour.reset_at)
+      }
+
+      if (data.seven_day != null) {
+        html += renderMeter('7-Day Usage', data.seven_day.used_percent, data.seven_day.reset_at)
+      }
+
+      // Extra usage if present
+      if (data.extra_usage != null && data.extra_usage.used_percent != null) {
+        html += renderMeter('Extra Usage', data.extra_usage.used_percent, data.extra_usage.reset_at)
+      }
+
+      content.innerHTML = html
+
+      // Stale error banner
+      if (data.error && data.error !== 'NOT_LOGGED_IN') {
+        footer.textContent = `⚠ ${data.error} · ${formatAge(data.fetchedAt)}`
+      }
+    }
+
+    // ── IPC listener ──────────────────────────────────────────────────────────
+    on('usage-update', render)
+
+    // ── Update footer age every 10s ───────────────────────────────────────────
+    let lastData = null
+    on('usage-update', d => { lastData = d })
+    setInterval(() => {
+      if (lastData) {
+        document.getElementById('footer').textContent = formatAge(lastData.fetchedAt)
+      }
+    }, 10000)
+  </script>
+</body>
+</html>
