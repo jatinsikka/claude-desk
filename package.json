@@ -1,7 +1,7 @@
 {
-  "name": "claude-desk",
+  "name": "deskpulse",
   "version": "1.0.0",
-  "description": "Tiny desk widget for Claude usage limits",
+  "description": "Tiny always-on-top desktop widget showing your AI usage limits in real time",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -12,8 +12,8 @@
     "electron-builder": "^25.0.0"
   },
   "build": {
-    "appId": "com.claudedesk.app",
-    "productName": "Claude Desk",
+    "appId": "com.deskpulse.app",
+    "productName": "DeskPulse",
     "mac": {
       "category": "public.app-category.utilities",
       "target": ["dmg", "zip"]

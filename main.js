@@ -40,7 +40,7 @@ function createClaudeWindow() {
     width: 1100,
     height: 800,
     show: false,
-    title: 'Claude — Login',
+    title: 'DeskPulse — Sign in to Claude',
     webPreferences: {
       partition: CLAUDE_PARTITION,
     }

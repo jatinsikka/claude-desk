@@ -1,33 +1,37 @@
-# Claude Desk
+# DeskPulse
 
-A tiny always-on-top desktop widget that shows your **Claude.ai subscription usage limits** in real time.
+A tiny always-on-top desktop widget that shows your **AI usage limits in real time** — right on your desktop, all the time.
 
-![Claude Desk Widget](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
-![License](https://img.shields.io/badge/license-MIT-purple)
+Currently tracks **Claude.ai** subscription usage (5-hour window + 7-day). Built with Electron, no login credentials stored — uses your existing browser session.
+
+![platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
+![license](https://img.shields.io/badge/license-MIT-purple)
+
+---
 
 ## What it shows
 
-- **5-Hour Window** — how much of your rolling 5-hour usage you've burned through
-- **7-Day Usage** — weekly consumption at a glance
-- Color-coded bars: purple → amber (70%) → red (90%)
-- Countdown to reset
+- **5-Hour Window** — rolling usage % with countdown to reset
+- **7-Day Usage** — weekly consumption meter
+- Color-coded bars: purple → amber at 70% → red at 90%
+- Live "updated X ago" timestamp
 
 ## Setup
 
-**Prerequisites:** Node.js 18+
+**Requires:** Node.js 18+
 
 ```bash
-git clone https://github.com/jatinsikka/claude-desk.git
-cd claude-desk
+git clone https://github.com/jatinsikka/deskpulse.git
+cd deskpulse
 npm install
 npm start
 ```
 
-On first launch, a Claude.ai window appears — log in normally. It hides itself and the widget appears in the bottom-right corner of your screen.
+On first launch a Claude.ai window appears — sign in normally. It hides itself and the widget appears in the bottom-right corner of your screen.
 
 ## How it works
 
-Claude Desk loads a hidden Claude.ai session in Electron, extracts your session cookies, and calls Anthropic's internal usage endpoint (`/api/oauth/usage`) every 5 minutes. No passwords are stored — it uses the same browser session as Claude.ai.
+DeskPulse loads a hidden Claude.ai session inside Electron, reads session cookies, and calls an internal usage endpoint every 5 minutes. Your credentials never leave your machine — the same session your browser uses.
 
 ## Controls
 
@@ -37,13 +41,17 @@ Claude Desk loads a hidden Claude.ai session in Electron, extracts your session 
 | `⚙` | Open Claude.ai (re-login if needed) |
 | `✕` | Quit |
 
-Drag the widget anywhere on your screen.
+Drag anywhere on screen.
+
+## Hardware
+
+Interested in a physical version — a tiny glowing desk screen? The enclosure design (OpenSCAD) and bill of materials are in [`/hardware`](./hardware). Built around the LILYGO T-Display-S3 (~$12).
 
 ## Notes
 
-- This uses an **undocumented internal API endpoint**. It may break if Anthropic changes their infrastructure.
-- The widget polls every 5 minutes to avoid rate limiting (429s).
-- Your session is stored locally in Electron's partition store — never sent anywhere else.
+- Uses an undocumented internal API. May break if Anthropic changes their infrastructure.
+- Polls every 5 minutes to stay within rate limits.
+- No data is sent anywhere — fully local.
 
 ## License
 
